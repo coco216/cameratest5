@@ -80,6 +80,8 @@ public class MainActivity extends AppCompatActivity {
     private int year_start, month_start, day_start, hour_start, minute_start;
     private int year_end, month_end, day_end, hour_end, minute_end;
 
+    private String PhotoDirectoryName = "AutoPhoto";
+
     private static final SparseIntArray ORIENTATIONS = new SparseIntArray();
 
     static {
@@ -172,6 +174,11 @@ public class MainActivity extends AppCompatActivity {
         endTimeStr = sdf.format(cal.getTime());
         tv_endtime_id.setText(endTimeStr);
 
+        File myDirectory = new File(Environment.getExternalStorageDirectory(), PhotoDirectoryName);
+        if(!myDirectory.exists()) {
+            myDirectory.mkdirs();
+        }
+
         assert takePictureButton != null;
         takePictureButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -201,8 +208,8 @@ public class MainActivity extends AppCompatActivity {
                 nowDate = Calendar.getInstance().getTime();
                waitTimeToStartMsec = startDate.getTime() - nowDate.getTime();
 
-                Toast.makeText(MainActivity.this, Long.toString(waitTimeToStartMsec), Toast.LENGTH_SHORT).show();
-                Toast.makeText(MainActivity.this,Long.toString(intervalMsec), Toast.LENGTH_SHORT).show();
+               // Toast.makeText(MainActivity.this, Long.toString(waitTimeToStartMsec), Toast.LENGTH_SHORT).show();
+                //Toast.makeText(MainActivity.this,Long.toString(intervalMsec), Toast.LENGTH_SHORT).show();
                 startCamera();
             }
         });
@@ -368,7 +375,7 @@ private void setStartTime(){
         @Override
         public void onCaptureCompleted(CameraCaptureSession session, CaptureRequest request, TotalCaptureResult result) {
             super.onCaptureCompleted(session, request, result);
-            Toast.makeText(MainActivity.this, "Saved:" + file, Toast.LENGTH_SHORT).show();
+           // Toast.makeText(MainActivity.this, "Saved:" + file, Toast.LENGTH_SHORT).show();
             createCameraPreview();
         }
     };
@@ -391,6 +398,7 @@ private void setStartTime(){
     }
 
     protected void takePicture() {
+
         if (null == cameraDevice) {
             Log.e(TAG, "cameraDevice is null");
             return;
@@ -418,7 +426,13 @@ private void setStartTime(){
             // Orientation
             int rotation = getWindowManager().getDefaultDisplay().getRotation();
             captureBuilder.set(CaptureRequest.JPEG_ORIENTATION, ORIENTATIONS.get(rotation));
-            final File file = new File(Environment.getExternalStorageDirectory() + "/pic.jpg");
+
+            // create a new filename for the picture
+            SimpleDateFormat formatter= new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
+            Date dateForFilename = new Date(System.currentTimeMillis());
+            String photoFilename = formatter.format(dateForFilename);
+
+            final File file = new File(Environment.getExternalStorageDirectory() +"/"+PhotoDirectoryName+ "/"+photoFilename+".jpg");
             ImageReader.OnImageAvailableListener readerListener = new ImageReader.OnImageAvailableListener() {
                 @Override
                 public void onImageAvailable(ImageReader reader) {
@@ -445,6 +459,7 @@ private void setStartTime(){
                     try {
                         output = new FileOutputStream(file);
                         output.write(bytes);
+                       // Toast.makeText(MainActivity.this, "Writing:" + file, Toast.LENGTH_SHORT).show();
                     } finally {
                         if (null != output) {
                             output.close();
@@ -457,7 +472,7 @@ private void setStartTime(){
                 @Override
                 public void onCaptureCompleted(CameraCaptureSession session, CaptureRequest request, TotalCaptureResult result) {
                     super.onCaptureCompleted(session, request, result);
-                    Toast.makeText(MainActivity.this, "Saved:" + file, Toast.LENGTH_SHORT).show();
+                   // Toast.makeText(MainActivity.this, "Saved:" + file, Toast.LENGTH_SHORT).show();
                     createCameraPreview();
                 }
             };
