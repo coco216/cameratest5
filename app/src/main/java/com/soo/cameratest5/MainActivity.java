@@ -34,6 +34,7 @@ import android.view.TextureView;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
@@ -48,6 +49,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -67,12 +69,16 @@ public class MainActivity extends AppCompatActivity {
 
     private TextView tv_starttime_id;
     private TextView tv_endtime_id;
-    private TextView et_interval_id;
+    private EditText et_interval_id;
 
     private Calendar c;
     private Calendar c_end;
+    private Calendar calStart, calEnd;
     private int mYear, mMonth, mDay, mHour, mMinute;
     private int mYear_end, mMonth_end, mDay_end, mHour_end, mMinute_end;
+
+    private int year_start, month_start, day_start, hour_start, minute_start;
+    private int year_end, month_end, day_end, hour_end, minute_end;
 
     private static final SparseIntArray ORIENTATIONS = new SparseIntArray();
 
@@ -99,7 +105,11 @@ public class MainActivity extends AppCompatActivity {
     int startButtonClicked =0;
     String startTimeStr="";
     String endTimeStr="";
+    String intervalStr;
     SimpleDateFormat sdf;
+    int intervalMsec=0;
+    long waitTimeToStartMsec=0;
+    Date startDate, endDate, nowDate;
 
     private Date currentTime, oneDayLaterTime;
 
@@ -113,7 +123,7 @@ public class MainActivity extends AppCompatActivity {
             doSomething();
 
             // Schedule the function to be called again after 10 seconds
-            mHandler.postDelayed(this, 5000);
+            mHandler.postDelayed(this, intervalMsec);
         }
     };
 
@@ -126,7 +136,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void startCamera() {
-        mHandler.postDelayed(mRunnable, 5000);
+        mHandler.postDelayed(mRunnable, waitTimeToStartMsec);
     }
 
     @Override
@@ -144,7 +154,7 @@ public class MainActivity extends AppCompatActivity {
 
         tv_starttime_id = (TextView) findViewById(R.id.tv_starttime);
         tv_endtime_id = (TextView) findViewById(R.id.tv_endtime);
-        et_interval_id = (TextView) findViewById(R.id.et_interval);
+        et_interval_id = (EditText) findViewById(R.id.et_interval);
 
         sdf = new SimpleDateFormat("yyyy-MM-dd, HH:mm:ss", Locale.getDefault());
 
@@ -168,6 +178,31 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 //takePicture();
                 startButtonClicked =1;
+                intervalStr = et_interval_id.getText().toString();
+                intervalMsec = Integer.parseInt(intervalStr)*1000;
+
+                String tv_starttime_id_str = tv_starttime_id.getText().toString();
+                String tv_endtime_id_str = tv_endtime_id.getText().toString();
+
+                try {
+                    startDate = sdf.parse(tv_starttime_id_str);
+
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+
+                try {
+                    endDate = sdf.parse(tv_endtime_id_str);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+
+
+                nowDate = Calendar.getInstance().getTime();
+               waitTimeToStartMsec = startDate.getTime() - nowDate.getTime();
+
+                Toast.makeText(MainActivity.this, Long.toString(waitTimeToStartMsec), Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this,Long.toString(intervalMsec), Toast.LENGTH_SHORT).show();
                 startCamera();
             }
         });
@@ -186,8 +221,11 @@ public class MainActivity extends AppCompatActivity {
                             @Override
                             public void onDateSet(DatePicker view, int year,
                                                   int monthOfYear, int dayOfMonth) {
+                                year_start= year;
+                                month_start = monthOfYear;
+                                day_start = dayOfMonth;
                                 startTimeStr = dayOfMonth + "-" + (monthOfYear + 1) + "-" + year;
-                                tv_starttime_id.setText(startTimeStr);
+                               // tv_starttime_id.setText(startTimeStr);
                                 setStartTime();
 
                             }
@@ -208,10 +246,15 @@ public class MainActivity extends AppCompatActivity {
                 DatePickerDialog datePickerDialog = new DatePickerDialog(MainActivity.this,new DatePickerDialog.OnDateSetListener() {
 
                     @Override
-                    public void onDateSet(DatePicker view, int year_end,
+                    public void onDateSet(DatePicker view, int year_end_local,
                                           int monthOfYear_end, int dayOfMonth_end) {
+
+                        year_end= year_end_local;
+                        month_end = monthOfYear_end ;
+                        day_end = dayOfMonth_end;
+
                         endTimeStr = dayOfMonth_end + "-" + (monthOfYear_end + 1) + "-" + year_end;
-                        tv_endtime_id.setText(endTimeStr);
+                        //tv_endtime_id.setText(endTimeStr);
                         setEndTime();
 
                     }
@@ -240,8 +283,14 @@ private void setStartTime(){
                 @Override
                 public void onTimeSet(TimePicker view, int hourOfDay,
                                       int minute) {
-                    startTimeStr = startTimeStr + " "+ hourOfDay + ":" + minute;
 
+                    //endTimeStr = dayOfMonth_end + "-" + (monthOfYear_end + 1) + "-" + year_end;
+                    //startTimeStr = startTimeStr + " "+ hourOfDay + ":" + minute;
+
+                    calStart = Calendar.getInstance();
+                    calStart.set(year_start,month_start, day_start, hourOfDay, minute, 0 );
+
+                    startTimeStr = sdf.format(calStart.getTime());
                     tv_starttime_id.setText(startTimeStr);
                 }
             }, mHour, mMinute, false);
@@ -260,8 +309,12 @@ private void setStartTime(){
             @Override
             public void onTimeSet(TimePicker view, int hourOfDay_end,
                                   int minute_end) {
-                endTimeStr = endTimeStr + " "+ hourOfDay_end + ":" + minute_end;
+               // endTimeStr = endTimeStr + " "+ hourOfDay_end + ":" + minute_end;
 
+                calEnd = Calendar.getInstance();
+                calEnd.set(year_end,month_end, day_end, hourOfDay_end, minute_end, 0 );
+
+                endTimeStr = sdf.format(calEnd.getTime());
                 tv_endtime_id.setText(endTimeStr);
             }
         }, mHour_end, mMinute_end, false);
