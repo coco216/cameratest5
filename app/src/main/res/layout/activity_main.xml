@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:layout_above="@+id/btn_starttime"
         android:layout_alignParentTop="true"
-        android:layout_marginTop="-51dp"
+        android:layout_marginTop="2dp"
         android:layout_marginBottom="5dp" />
 
     <Button
@@ -28,13 +28,13 @@
         android:id="@+id/btn_endtime"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/btn_interval"
+        android:layout_above="@+id/tv_interval"
         android:layout_marginTop="2dp"
         android:layout_marginBottom="2dp"
         android:text="Set End Time:" />
 
-    <Button
-        android:id="@+id/btn_interval"
+    <TextView
+        android:id="@+id/tv_interval"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_above="@+id/btn_takepicture"
@@ -51,6 +51,9 @@
         android:layout_marginTop="2dp"
         android:layout_marginBottom="5dp"
         android:text="Start Capture" />
+
+
+
 
     <TextView
         android:id="@+id/tv_starttime"
@@ -72,14 +75,17 @@
         android:layout_toEndOf="@+id/btn_endtime"
         android:text="TextView" />
 
-    <TextView
-        android:id="@+id/tv_interval"
-        android:layout_width="wrap_content"
+
+    <EditText
+        android:id="@+id/et_interval"
+        android:layout_width="61dp"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/btn_interval"
-        android:layout_marginStart="14dp"
-        android:layout_marginBottom="14dp"
-        android:layout_toEndOf="@+id/btn_interval"
-        android:text="TextView" />
+        android:layout_alignBottom="@+id/tv_interval"
+        android:layout_marginStart="10dp"
+        android:layout_marginBottom="2dp"
+        android:layout_toEndOf="@+id/tv_interval"
+        android:gravity="right"
+        android:text="30"
+        android:textSize="15sp" />
 
 </RelativeLayout>

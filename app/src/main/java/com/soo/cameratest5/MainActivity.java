@@ -2,6 +2,8 @@ package com.soo.cameratest5;
 
 import android.Manifest;
 import android.app.DatePickerDialog;
+import android.app.Dialog;
+import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.ImageFormat;
@@ -33,6 +35,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.TextView;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
 //import androidx.annotation.NonNull;
@@ -45,10 +48,13 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "AndroidCameraApi";
@@ -57,13 +63,16 @@ public class MainActivity extends AppCompatActivity {
 
     private Button btn_starttime_id;
     private Button btn_endtime_id;
-    private Button btn_interval_id;
+    private Button tv_interval_id;
 
     private TextView tv_starttime_id;
     private TextView tv_endtime_id;
-    private TextView tv_interval_id;
+    private TextView et_interval_id;
 
+    private Calendar c;
+    private Calendar c_end;
     private int mYear, mMonth, mDay, mHour, mMinute;
+    private int mYear_end, mMonth_end, mDay_end, mHour_end, mMinute_end;
 
     private static final SparseIntArray ORIENTATIONS = new SparseIntArray();
 
@@ -88,7 +97,11 @@ public class MainActivity extends AppCompatActivity {
     private HandlerThread mBackgroundThread;
 
     int startButtonClicked =0;
+    String startTimeStr="";
+    String endTimeStr="";
+    SimpleDateFormat sdf;
 
+    private Date currentTime, oneDayLaterTime;
 
 
     private Handler mHandler = new Handler();
@@ -127,11 +140,27 @@ public class MainActivity extends AppCompatActivity {
 
         btn_starttime_id = (Button) findViewById(R.id.btn_starttime);
         btn_endtime_id   = (Button) findViewById(R.id.btn_endtime);
-        btn_interval_id = (Button) findViewById(R.id.btn_interval);
+        //tv_interval_id = (Button) findViewById(R.id.tv_interval);
 
         tv_starttime_id = (TextView) findViewById(R.id.tv_starttime);
         tv_endtime_id = (TextView) findViewById(R.id.tv_endtime);
-        tv_interval_id = (TextView) findViewById(R.id.tv_interval);
+        et_interval_id = (TextView) findViewById(R.id.et_interval);
+
+        sdf = new SimpleDateFormat("yyyy-MM-dd, HH:mm:ss", Locale.getDefault());
+
+        currentTime = Calendar.getInstance().getTime();
+
+        // startTimeStr = sdf.format(new Date());
+        startTimeStr = sdf.format(currentTime);
+        tv_starttime_id.setText(startTimeStr);
+
+        //oneDayLaterTime
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(currentTime);
+        cal.add(Calendar.HOUR, 24);
+        //String newTime = df.format(cal.getTime());
+        endTimeStr = sdf.format(cal.getTime());
+        tv_endtime_id.setText(endTimeStr);
 
         assert takePictureButton != null;
         takePictureButton.setOnClickListener(new View.OnClickListener() {
@@ -147,7 +176,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 // Get Current Date
-                final Calendar c = Calendar.getInstance();
+                c= Calendar.getInstance();
                 mYear = c.get(Calendar.YEAR);
                 mMonth = c.get(Calendar.MONTH);
                 mDay = c.get(Calendar.DAY_OF_MONTH);
@@ -157,7 +186,9 @@ public class MainActivity extends AppCompatActivity {
                             @Override
                             public void onDateSet(DatePicker view, int year,
                                                   int monthOfYear, int dayOfMonth) {
-                                tv_starttime_id.setText(dayOfMonth + "-" + (monthOfYear + 1) + "-" + year);
+                                startTimeStr = dayOfMonth + "-" + (monthOfYear + 1) + "-" + year;
+                                tv_starttime_id.setText(startTimeStr);
+                                setStartTime();
 
                             }
                         }, mYear, mMonth, mDay);
@@ -165,6 +196,76 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        btn_endtime_id.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Get Current Date
+                c_end= Calendar.getInstance();
+                mYear_end = c_end.get(Calendar.YEAR);
+                mMonth_end = c_end.get(Calendar.MONTH);
+                mDay_end = c_end.get(Calendar.DAY_OF_MONTH);
+
+                DatePickerDialog datePickerDialog = new DatePickerDialog(MainActivity.this,new DatePickerDialog.OnDateSetListener() {
+
+                    @Override
+                    public void onDateSet(DatePicker view, int year_end,
+                                          int monthOfYear_end, int dayOfMonth_end) {
+                        endTimeStr = dayOfMonth_end + "-" + (monthOfYear_end + 1) + "-" + year_end;
+                        tv_endtime_id.setText(endTimeStr);
+                        setEndTime();
+
+                    }
+                }, mYear_end, mMonth_end, mDay_end);
+                datePickerDialog.show();
+            }
+        });
+
+
+
+
+
+    }
+
+
+
+private void setStartTime(){
+    // Get Current Time
+    final Calendar c = Calendar.getInstance();
+    mHour = c.get(Calendar.HOUR_OF_DAY);
+    mMinute = c.get(Calendar.MINUTE);
+
+    // Launch Time Picker Dialog
+    TimePickerDialog timePickerDialog = new TimePickerDialog(MainActivity.this, new TimePickerDialog.OnTimeSetListener() {
+
+                @Override
+                public void onTimeSet(TimePicker view, int hourOfDay,
+                                      int minute) {
+                    startTimeStr = startTimeStr + " "+ hourOfDay + ":" + minute;
+
+                    tv_starttime_id.setText(startTimeStr);
+                }
+            }, mHour, mMinute, false);
+    timePickerDialog.show();
+}
+
+    private void setEndTime(){
+        // Get Current Time
+        c_end = Calendar.getInstance();
+        mHour_end = c_end.get(Calendar.HOUR_OF_DAY);
+        mMinute_end = c_end.get(Calendar.MINUTE);
+
+        // Launch Time Picker Dialog
+        TimePickerDialog timePickerDialog = new TimePickerDialog(MainActivity.this, new TimePickerDialog.OnTimeSetListener() {
+
+            @Override
+            public void onTimeSet(TimePicker view, int hourOfDay_end,
+                                  int minute_end) {
+                endTimeStr = endTimeStr + " "+ hourOfDay_end + ":" + minute_end;
+
+                tv_endtime_id.setText(endTimeStr);
+            }
+        }, mHour_end, mMinute_end, false);
+        timePickerDialog.show();
     }
 
 
