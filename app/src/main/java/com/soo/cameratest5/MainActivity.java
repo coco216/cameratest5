@@ -72,6 +72,31 @@ public class MainActivity extends AppCompatActivity {
     private Handler mBackgroundHandler;
     private HandlerThread mBackgroundThread;
 
+
+
+    private Handler mHandler = new Handler();
+
+    private Runnable mRunnable = new Runnable() {
+        @Override
+        public void run() {
+            // Call your function here
+            doSomething();
+
+            // Schedule the function to be called again after 10 seconds
+            mHandler.postDelayed(this, 5000);
+        }
+    };
+
+
+    private void doSomething() {
+        // Your function code here
+        takePicture();
+    }
+
+    private void startCamera() {
+        mHandler.postDelayed(mRunnable, 5000);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -84,10 +109,13 @@ public class MainActivity extends AppCompatActivity {
         takePictureButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                takePicture();
+                //takePicture();
+                startCamera();
             }
         });
     }
+
+
 
     TextureView.SurfaceTextureListener textureListener = new TextureView.SurfaceTextureListener() {
         @Override
@@ -341,6 +369,10 @@ public class MainActivity extends AppCompatActivity {
         } else {
             textureView.setSurfaceTextureListener(textureListener);
         }
+
+        // Start the periodic function call when the activity resumes
+        mHandler.postDelayed(mRunnable, 10000);
+
     }
 
     @Override
@@ -349,5 +381,9 @@ public class MainActivity extends AppCompatActivity {
         //closeCamera();
         stopBackgroundThread();
         super.onPause();
+
+        // Stop the periodic function call when the activity pauses
+        mHandler.removeCallbacks(mRunnable);
+
     }
 }
