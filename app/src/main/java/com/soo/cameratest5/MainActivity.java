@@ -124,8 +124,24 @@ public class MainActivity extends AppCompatActivity {
             // Call your function here
             doSomething();
 
-            // Schedule the function to be called again after 10 seconds
-            mHandler.postDelayed(this, intervalMsec);
+            Date nowDateTmp = Calendar.getInstance().getTime();
+            if (nowDateTmp.getTime()<endDate.getTime())
+                {
+                    long timeGapSinceBeginning = nowDateTmp.getTime() - startDate.getTime();
+                    long remainingMsec = timeGapSinceBeginning % intervalMsec;
+
+                    // Schedule the function to be called again after 10 seconds
+                    if (remainingMsec<0)
+                        remainingMsec =0;
+
+                    mHandler.postDelayed(this, remainingMsec);
+                }
+                else {
+                    finishAffinity();
+                    System.exit(0);
+                }
+
+
         }
     };
 
