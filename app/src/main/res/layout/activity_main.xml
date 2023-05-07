@@ -10,8 +10,37 @@
         android:id="@+id/texture"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_above="@+id/btn_starttime"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="-51dp"
+        android:layout_marginBottom="5dp" />
+
+    <Button
+        android:id="@+id/btn_starttime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/btn_endtime"
+        android:layout_marginTop="2dp"
+        android:layout_marginBottom="2dp"
+        android:text="Set Start Time:" />
+
+    <Button
+        android:id="@+id/btn_endtime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/btn_interval"
+        android:layout_marginTop="2dp"
+        android:layout_marginBottom="2dp"
+        android:text="Set End Time:" />
+
+    <Button
+        android:id="@+id/btn_interval"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_above="@+id/btn_takepicture"
-        android:layout_alignParentTop="true"/>
+        android:layout_marginTop="2dp"
+        android:layout_marginBottom="2dp"
+        android:text="Capture Time Interval (sec)" />
 
     <Button
         android:id="@+id/btn_takepicture"
@@ -19,8 +48,38 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="16dp"
-        android:layout_marginBottom="16dp"
-        android:text="@string/take_picture" />
+        android:layout_marginTop="2dp"
+        android:layout_marginBottom="5dp"
+        android:text="Start Capture" />
+
+    <TextView
+        android:id="@+id/tv_starttime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/btn_starttime"
+        android:layout_marginStart="8dp"
+        android:layout_marginBottom="14dp"
+        android:layout_toEndOf="@+id/btn_starttime"
+        android:text="TextView" />
+
+    <TextView
+        android:id="@+id/tv_endtime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/btn_endtime"
+        android:layout_marginStart="25dp"
+        android:layout_marginBottom="13dp"
+        android:layout_toEndOf="@+id/btn_endtime"
+        android:text="TextView" />
+
+    <TextView
+        android:id="@+id/tv_interval"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/btn_interval"
+        android:layout_marginStart="14dp"
+        android:layout_marginBottom="14dp"
+        android:layout_toEndOf="@+id/btn_interval"
+        android:text="TextView" />
 
 </RelativeLayout>

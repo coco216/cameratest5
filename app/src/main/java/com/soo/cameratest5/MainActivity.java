@@ -1,6 +1,7 @@
 package com.soo.cameratest5;
 
 import android.Manifest;
+import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.ImageFormat;
@@ -30,6 +31,8 @@ import android.view.Surface;
 import android.view.TextureView;
 import android.view.View;
 import android.widget.Button;
+import android.widget.DatePicker;
+import android.widget.TextView;
 import android.widget.Toast;
 
 //import androidx.annotation.NonNull;
@@ -44,12 +47,24 @@ import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "AndroidCameraApi";
     private Button takePictureButton;
     private TextureView textureView;
+
+    private Button btn_starttime_id;
+    private Button btn_endtime_id;
+    private Button btn_interval_id;
+
+    private TextView tv_starttime_id;
+    private TextView tv_endtime_id;
+    private TextView tv_interval_id;
+
+    private int mYear, mMonth, mDay, mHour, mMinute;
+
     private static final SparseIntArray ORIENTATIONS = new SparseIntArray();
 
     static {
@@ -72,6 +87,8 @@ public class MainActivity extends AppCompatActivity {
     private Handler mBackgroundHandler;
     private HandlerThread mBackgroundThread;
 
+    int startButtonClicked =0;
+
 
 
     private Handler mHandler = new Handler();
@@ -90,7 +107,9 @@ public class MainActivity extends AppCompatActivity {
 
     private void doSomething() {
         // Your function code here
-        takePicture();
+        if (startButtonClicked>0) {
+            takePicture();
+        }
     }
 
     private void startCamera() {
@@ -105,14 +124,47 @@ public class MainActivity extends AppCompatActivity {
         assert textureView != null;
         textureView.setSurfaceTextureListener(textureListener);
         takePictureButton = (Button) findViewById(R.id.btn_takepicture);
+
+        btn_starttime_id = (Button) findViewById(R.id.btn_starttime);
+        btn_endtime_id   = (Button) findViewById(R.id.btn_endtime);
+        btn_interval_id = (Button) findViewById(R.id.btn_interval);
+
+        tv_starttime_id = (TextView) findViewById(R.id.tv_starttime);
+        tv_endtime_id = (TextView) findViewById(R.id.tv_endtime);
+        tv_interval_id = (TextView) findViewById(R.id.tv_interval);
+
         assert takePictureButton != null;
         takePictureButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //takePicture();
+                startButtonClicked =1;
                 startCamera();
             }
         });
+
+        btn_starttime_id.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Get Current Date
+                final Calendar c = Calendar.getInstance();
+                mYear = c.get(Calendar.YEAR);
+                mMonth = c.get(Calendar.MONTH);
+                mDay = c.get(Calendar.DAY_OF_MONTH);
+
+                DatePickerDialog datePickerDialog = new DatePickerDialog(MainActivity.this,new DatePickerDialog.OnDateSetListener() {
+
+                            @Override
+                            public void onDateSet(DatePicker view, int year,
+                                                  int monthOfYear, int dayOfMonth) {
+                                tv_starttime_id.setText(dayOfMonth + "-" + (monthOfYear + 1) + "-" + year);
+
+                            }
+                        }, mYear, mMonth, mDay);
+                datePickerDialog.show();
+            }
+        });
+
     }
 
 
@@ -370,8 +422,9 @@ public class MainActivity extends AppCompatActivity {
             textureView.setSurfaceTextureListener(textureListener);
         }
 
+        startButtonClicked =0;
         // Start the periodic function call when the activity resumes
-        mHandler.postDelayed(mRunnable, 10000);
+        //mHandler.postDelayed(mRunnable, 10000);
 
     }
 
@@ -383,6 +436,7 @@ public class MainActivity extends AppCompatActivity {
         super.onPause();
 
         // Stop the periodic function call when the activity pauses
+        startButtonClicked=0;
         mHandler.removeCallbacks(mRunnable);
 
     }
