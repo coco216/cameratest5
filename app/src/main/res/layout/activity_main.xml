@@ -65,30 +65,78 @@
         android:layout_toEndOf="@+id/btn_starttime"
         android:text="TextView" />
 
+
     <TextView
         android:id="@+id/tv_endtime"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="15sp"
         android:layout_alignBottom="@+id/btn_endtime"
-        android:layout_marginStart="25dp"
-        android:layout_marginBottom="13dp"
+        android:layout_marginStart="23dp"
+        android:layout_marginBottom="15dp"
         android:layout_toEndOf="@+id/btn_endtime"
-        android:text="TextView" />
-
+        android:text="TextView"
+        android:textSize="15sp" />
 
     <EditText
         android:id="@+id/et_interval"
-        android:layout_width="61dp"
+        android:layout_width="76dp"
         android:layout_height="wrap_content"
-        android:maxLines="1"
-        android:inputType="number"
         android:layout_alignBottom="@+id/tv_interval"
-        android:layout_marginStart="10dp"
-        android:layout_marginBottom="-5dp"
+        android:layout_marginStart="9dp"
+        android:layout_marginBottom="-8dp"
         android:layout_toEndOf="@+id/tv_interval"
         android:gravity="center"
+        android:inputType="number"
+        android:maxLines="1"
         android:text="30"
         android:textSize="18sp" />
+
+    <TextView
+        android:id="@+id/tvTimeRemainingTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/btn_takepicture"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="14dp"
+        android:layout_marginBottom="87dp"
+        android:gravity="center"
+        android:text="Next Shot"
+        android:textSize="13sp" />
+
+    <TextView
+        android:id="@+id/tvTimeRemaining"
+        android:layout_width="86dp"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/btn_takepicture"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="13dp"
+        android:layout_marginBottom="40dp"
+        android:gravity="right"
+        android:text="0 Sec"
+        android:textSize="15sp" />
+
+    <TextView
+        android:id="@+id/tvShotCountTitle"
+        android:layout_width="90dp"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/btn_takepicture"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="0dp"
+        android:gravity="right"
+        android:text="Photo Count"
+        android:textSize="13sp" />
+
+    <TextView
+        android:id="@+id/tvShotCount"
+        android:layout_width="70dp"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/btn_takepicture"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="14dp"
+        android:layout_marginBottom="-25dp"
+        android:gravity="center"
+        android:text="0"
+        android:textSize="15sp" />
 
 </RelativeLayout>

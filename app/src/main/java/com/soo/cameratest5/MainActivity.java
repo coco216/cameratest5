@@ -71,6 +71,9 @@ public class MainActivity extends AppCompatActivity {
     private TextView tv_endtime_id;
     private EditText et_interval_id;
 
+    private TextView tvTimeRemainingId;
+    private TextView tvShotCountId;
+
     private Calendar c;
     private Calendar c_end;
     private Calendar calStart, calEnd;
@@ -104,6 +107,9 @@ public class MainActivity extends AppCompatActivity {
     private Handler mBackgroundHandler;
     private HandlerThread mBackgroundThread;
 
+    int shotCounter=0;
+    float nextShotTimeLeft=0;
+
     int startButtonClicked =0;
     String startTimeStr="";
     String endTimeStr="";
@@ -114,6 +120,38 @@ public class MainActivity extends AppCompatActivity {
     Date startDate, endDate, nowDate;
 
     private Date currentTime, oneDayLaterTime;
+
+    // 1 sec time checker
+    private Handler secHandler = new Handler();
+
+    private Runnable secRunnable = new Runnable() {
+
+        @Override
+        public void run() {
+            float remainingSec;
+            long timeGapSinceBeginning;
+            long remainingMsec;
+            // Call your function here
+            Date nowDateTmp1 = Calendar.getInstance().getTime();
+            timeGapSinceBeginning = nowDateTmp1.getTime() - startDate.getTime();
+            remainingMsec = intervalMsec - (timeGapSinceBeginning % intervalMsec);
+
+            if (timeGapSinceBeginning<0){
+                timeGapSinceBeginning =timeGapSinceBeginning *-1;
+                remainingSec =timeGapSinceBeginning/1000;
+            }
+            else {
+                remainingSec =remainingMsec/1000;
+            }
+            if (remainingMsec<0)
+                remainingMsec =0;
+
+            tvTimeRemainingId.setText(String.valueOf(remainingSec)+" sec");
+
+            secHandler.postDelayed(this, 1000);
+        }
+    };
+
 
 
     private Handler mHandler = new Handler();
@@ -134,7 +172,6 @@ public class MainActivity extends AppCompatActivity {
                     Log.i("Time_Check: ","nowDateTmp:" + sdf.format(nowDateTmp));
                     Log.i("Time_Check: ","remainingMsec:" + remainingMsec);
 
-
                     // Schedule the function to be called again after 10 seconds
                     if (remainingMsec<0)
                         remainingMsec =0;
@@ -151,6 +188,26 @@ public class MainActivity extends AppCompatActivity {
     };
 
 
+    private boolean inputErrorCheck(){
+        Date nowDateTmp = Calendar.getInstance().getTime();
+        if (nowDateTmp.getTime()>=startDate.getTime()){
+            Toast.makeText(MainActivity.this, "Input Error: Start time must be later than now!", Toast.LENGTH_SHORT ).show();
+            return false;
+        }
+        if (endDate.getTime()<=startDate.getTime()){
+            Toast.makeText(MainActivity.this, "Input Error: End time must be later than Start time!", Toast.LENGTH_SHORT ).show();
+            return false;
+        }
+        if (intervalMsec <=0){
+            Toast.makeText(MainActivity.this, "Input Error: Capture time interval must be larger than 0 sec!", Toast.LENGTH_SHORT ).show();
+            return false;
+        }
+
+        return true;
+
+    }
+
+
     private void doSomething() {
         // Your function code here
         if (startButtonClicked>0) {
@@ -161,8 +218,14 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void terminateApp(){
+        finishAffinity();
+        System.exit(0);
+    }
+
     private void startCamera() {
         mHandler.postDelayed(mRunnable, waitTimeToStartMsec);
+        secHandler.postDelayed(secRunnable, 0);
     }
 
     @Override
@@ -181,6 +244,9 @@ public class MainActivity extends AppCompatActivity {
         tv_starttime_id = (TextView) findViewById(R.id.tv_starttime);
         tv_endtime_id = (TextView) findViewById(R.id.tv_endtime);
         et_interval_id = (EditText) findViewById(R.id.et_interval);
+
+        tvTimeRemainingId = (TextView) findViewById(R.id.tvTimeRemaining);
+        tvShotCountId = (TextView) findViewById(R.id.tvShotCount);
 
         sdf = new SimpleDateFormat("yyyy-MM-dd, HH:mm:ss", Locale.getDefault());
 
@@ -209,7 +275,14 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 //takePicture();
                 startButtonClicked =1;
+                shotCounter =0;
                 intervalStr = et_interval_id.getText().toString();
+
+                if (intervalStr.matches("")) {
+                    et_interval_id.setText("0");
+                    intervalStr = et_interval_id.getText().toString();
+                }
+
                 intervalMsec = Integer.parseInt(intervalStr)*1000;
 
                 String tv_starttime_id_str = tv_starttime_id.getText().toString();
@@ -234,7 +307,13 @@ public class MainActivity extends AppCompatActivity {
 
                // Toast.makeText(MainActivity.this, Long.toString(waitTimeToStartMsec), Toast.LENGTH_SHORT).show();
                 //Toast.makeText(MainActivity.this,Long.toString(intervalMsec), Toast.LENGTH_SHORT).show();
-                startCamera();
+                if (inputErrorCheck() == true) {
+                    startCamera();
+                }
+                else
+                {
+                    // do nothing
+                }
             }
         });
 
@@ -293,10 +372,6 @@ public class MainActivity extends AppCompatActivity {
                 datePickerDialog.show();
             }
         });
-
-
-
-
 
     }
 
@@ -469,6 +544,9 @@ private void setStartTime(){
                         byte[] bytes = new byte[buffer.capacity()];
                         buffer.get(bytes);
                         save(bytes);
+
+                        tvShotCountId.setText(String.valueOf(++shotCounter));
+
                     } catch (FileNotFoundException e) {
                         e.printStackTrace();
                     } catch (IOException e) {
@@ -633,6 +711,8 @@ private void setStartTime(){
         // Stop the periodic function call when the activity pauses
         startButtonClicked=0;
         mHandler.removeCallbacks(mRunnable);
+        secHandler.removeCallbacks(secRunnable);
+        terminateApp();
 
     }
 }
