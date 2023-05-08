@@ -39,8 +39,9 @@
         android:layout_height="wrap_content"
         android:layout_above="@+id/btn_takepicture"
         android:layout_marginTop="2dp"
-        android:layout_marginBottom="2dp"
-        android:text="Capture Time Interval (sec)" />
+        android:layout_marginBottom="10dp"
+        android:text="Capture Time Interval (sec)"
+        android:textSize="15sp" />
 
     <Button
         android:id="@+id/btn_takepicture"
@@ -53,12 +54,11 @@
         android:text="Start Capture" />
 
 
-
-
     <TextView
         android:id="@+id/tv_starttime"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:textSize="15sp"
         android:layout_alignBottom="@+id/btn_starttime"
         android:layout_marginStart="8dp"
         android:layout_marginBottom="14dp"
@@ -69,6 +69,7 @@
         android:id="@+id/tv_endtime"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:textSize="15sp"
         android:layout_alignBottom="@+id/btn_endtime"
         android:layout_marginStart="25dp"
         android:layout_marginBottom="13dp"
@@ -80,12 +81,14 @@
         android:id="@+id/et_interval"
         android:layout_width="61dp"
         android:layout_height="wrap_content"
+        android:maxLines="1"
+        android:inputType="number"
         android:layout_alignBottom="@+id/tv_interval"
         android:layout_marginStart="10dp"
-        android:layout_marginBottom="2dp"
+        android:layout_marginBottom="-5dp"
         android:layout_toEndOf="@+id/tv_interval"
-        android:gravity="right"
+        android:gravity="center"
         android:text="30"
-        android:textSize="15sp"/>
+        android:textSize="18sp" />
 
 </RelativeLayout>
