@@ -128,7 +128,12 @@ public class MainActivity extends AppCompatActivity {
             if (nowDateTmp.getTime()<endDate.getTime())
                 {
                     long timeGapSinceBeginning = nowDateTmp.getTime() - startDate.getTime();
-                    long remainingMsec = timeGapSinceBeginning % intervalMsec;
+                    long remainingMsec = intervalMsec - (timeGapSinceBeginning % intervalMsec);
+
+                    Log.i("Time_Check: ","startDate:" + sdf.format(startDate));
+                    Log.i("Time_Check: ","nowDateTmp:" + sdf.format(nowDateTmp));
+                    Log.i("Time_Check: ","remainingMsec:" + remainingMsec);
+
 
                     // Schedule the function to be called again after 10 seconds
                     if (remainingMsec<0)
@@ -149,6 +154,9 @@ public class MainActivity extends AppCompatActivity {
     private void doSomething() {
         // Your function code here
         if (startButtonClicked>0) {
+
+            Date nowDateTmp1 = Calendar.getInstance().getTime();
+            Log.i("Time_Check: ","Taking Picture: " + sdf.format(nowDateTmp1));
             takePicture();
         }
     }
@@ -415,6 +423,11 @@ private void setStartTime(){
 
     protected void takePicture() {
 
+        // create a new filename for the picture
+        SimpleDateFormat formatter= new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
+        Date dateForFilename = new Date(System.currentTimeMillis());
+        String photoFilename = formatter.format(dateForFilename);
+
         if (null == cameraDevice) {
             Log.e(TAG, "cameraDevice is null");
             return;
@@ -443,10 +456,7 @@ private void setStartTime(){
             int rotation = getWindowManager().getDefaultDisplay().getRotation();
             captureBuilder.set(CaptureRequest.JPEG_ORIENTATION, ORIENTATIONS.get(rotation));
 
-            // create a new filename for the picture
-            SimpleDateFormat formatter= new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
-            Date dateForFilename = new Date(System.currentTimeMillis());
-            String photoFilename = formatter.format(dateForFilename);
+
 
             final File file = new File(Environment.getExternalStorageDirectory() +"/"+PhotoDirectoryName+ "/"+photoFilename+".jpg");
             ImageReader.OnImageAvailableListener readerListener = new ImageReader.OnImageAvailableListener() {
