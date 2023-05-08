@@ -168,9 +168,9 @@ public class MainActivity extends AppCompatActivity {
                     long timeGapSinceBeginning = nowDateTmp.getTime() - startDate.getTime();
                     long remainingMsec = intervalMsec - (timeGapSinceBeginning % intervalMsec);
 
-                    Log.i("Time_Check: ","startDate:" + sdf.format(startDate));
-                    Log.i("Time_Check: ","nowDateTmp:" + sdf.format(nowDateTmp));
-                    Log.i("Time_Check: ","remainingMsec:" + remainingMsec);
+                    //Log.i("Time_Check: ","startDate:" + sdf.format(startDate));
+                    //Log.i("Time_Check: ","nowDateTmp:" + sdf.format(nowDateTmp));
+                    //Log.i("Time_Check: ","remainingMsec:" + remainingMsec);
 
                     // Schedule the function to be called again after 10 seconds
                     if (remainingMsec<0)
@@ -213,7 +213,7 @@ public class MainActivity extends AppCompatActivity {
         if (startButtonClicked>0) {
 
             Date nowDateTmp1 = Calendar.getInstance().getTime();
-            Log.i("Time_Check: ","Taking Picture: " + sdf.format(nowDateTmp1));
+            //Log.i("Time_Check: ","Taking Picture: " + sdf.format(nowDateTmp1));
             takePicture();
         }
     }
